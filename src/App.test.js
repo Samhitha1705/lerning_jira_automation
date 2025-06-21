@@ -7,11 +7,12 @@ test('test1: should render dashboard title (PASS)', () => {
   expect(title).toBeInTheDocument(); // ✅ Pass
 });
 
-test('test2: should show status message (PASS)', () => {
+test('test2: should show status message (FAIL)', () => {
   render(<App />);
-  const status = screen.getByText(/Cnnn\/CD with Jira Integration/i);
-  expect(status).toBeInTheDocument(); // ✅ This will pass
+  const status = screen.getByText(/This text does not exist/i); // Intentional failure
+  expect(status).toBeInTheDocument();
 });
+
 
 
 test('test3: check if button exists (PASS)', () => {

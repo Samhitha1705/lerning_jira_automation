@@ -29,7 +29,7 @@ jobs:
         run: |
           FAIL_COUNT=$(jq '.numFailedTests' test-report.json)
           echo "Failed Tests: $FAIL_COUNT"
-
+          
           if [ "$FAIL_COUNT" -ge 3 ]; then
             echo "SEVERITY=High" >> $GITHUB_ENV
           elif [ "$FAIL_COUNT" -ge 1 ]; then
@@ -40,7 +40,7 @@ jobs:
 
       - name: Create Jira Bug if Severity is Medium or High
         if: env.SEVERITY != 'None'
-        uses: atlassian/gajira-create@v3
+        uses: atlassian/gajira-create@v2
         with:
           project: LEARN
           issuetype: Bug
