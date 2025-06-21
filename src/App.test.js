@@ -9,7 +9,7 @@ test('test1: should render dashboard title (PASS)', () => {
 
 test('test2: should show status message (PASS)', () => {
   render(<App />);
-  const status = screen.getByText(/CI\/CD with Jira Integration/i);
+  const status = screen.getByText(/Cnnn\/CD with Jira Integration/i);
   expect(status).toBeInTheDocument(); // ✅ This will pass
 });
 
