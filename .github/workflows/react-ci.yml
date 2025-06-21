@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
@@ -36,8 +36,9 @@ jobs:
             echo "SEVERITY=Medium" >> $GITHUB_ENV
           else
             echo "SEVERITY=None" >> $GITHUB_ENV
+        shell: bash
 
-      - name: Create Jira bug if tests failed
+      - name: Create Jira Bug if Severity is Medium or High
         if: env.SEVERITY != 'None'
         uses: atlassian/gajira-create@v3
         with:
@@ -45,13 +46,15 @@ jobs:
           issuetype: Bug
           summary: "❌ React UI Test Failure | Severity: ${{ env.SEVERITY }}"
           description: |
-            Frontend tests failed in the GitHub CI pipeline.
+            Frontend tests failed during GitHub CI pipeline run.
 
-            Severity: ${{ env.SEVERITY }}
-            Failed test details are available in the GitHub Actions logs.
+            🧪 Severity: ${{ env.SEVERITY }}
+            🔍 Commit: ${{ github.sha }}
+            👤 Triggered by: ${{ github.actor }}
 
-            🔗 [View CI Job](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            📄 Check full test logs:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         env:
-          JIRA_BASE_URL: https://vedasamhithagopalam.atlassian.net
-          JIRA_USER_EMAIL: vedasamhitha1978@gmail.com
-          JIRA_API_TOKEN: ATATT3xFfGF06AL1T9KlJNId4j35LRFCTCCkTI3mewaVGEFCdgwNZCICAoFc4rREqBSfkaMOaM1YIZ8SG53Sq-ah0N58gdkHSp-XfdICzStseMIJi0NxbxEh09CiJVnrY4S_afsqyHMrSQ7myAvFBWCt-G4qau8wRvO7y3bnBZwz8lLHibRZ4cI=
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
