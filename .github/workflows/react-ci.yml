@@ -36,7 +36,7 @@ jobs:
             echo "SEVERITY=Medium" >> $GITHUB_ENV
           else
             echo "SEVERITY=None" >> $GITHUB_ENV
-        shell: bash
+          fi
 
       - name: Create Jira Bug if Severity is Medium or High
         if: env.SEVERITY != 'None'
