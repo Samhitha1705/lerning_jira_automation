@@ -51,7 +51,7 @@ jobs:
         uses: atlassian/gajira-create@v3
         with:
           project: SCRUM
-          issuetype: TO DO
+          issuetype: Epic
           summary: "❌ React UI Test Failure | Severity: ${{ env.SEVERITY }}"
           description: |
             Frontend tests failed during GitHub CI pipeline run.
