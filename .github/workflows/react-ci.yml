@@ -29,7 +29,7 @@ jobs:
         run: |
           FAIL_COUNT=$(jq '.numFailedTests' test-report.json)
           echo "Failed Tests: $FAIL_COUNT"
-          
+
           if [ "$FAIL_COUNT" -ge 3 ]; then
             echo "SEVERITY=High" >> $GITHUB_ENV
           elif [ "$FAIL_COUNT" -ge 1 ]; then
@@ -38,9 +38,17 @@ jobs:
             echo "SEVERITY=None" >> $GITHUB_ENV
           fi
 
+      - name: Jira Login (required for gajira-create@v3)
+        if: env.SEVERITY != 'None'
+        uses: atlassian/gajira-login@v3
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
       - name: Create Jira Bug if Severity is Medium or High
         if: env.SEVERITY != 'None'
-        uses: atlassian/gajira-create@v2
+        uses: atlassian/gajira-create@v3
         with:
           project: LEARN
           issuetype: Bug
@@ -54,7 +62,3 @@ jobs:
 
             📄 Check full test logs:
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
