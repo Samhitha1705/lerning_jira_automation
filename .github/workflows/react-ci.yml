@@ -1,0 +1,57 @@
+name: React CI + Auto Jira Bug with Severity
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test-react-ui:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests and generate JSON report
+        run: npm test -- --watchAll=false --json --outputFile=test-report.json
+        continue-on-error: true
+
+      - name: Extract severity based on failed test count
+        id: severity
+        run: |
+          FAIL_COUNT=$(jq '.numFailedTests' test-report.json)
+          echo "Failed Tests: $FAIL_COUNT"
+
+          if [ "$FAIL_COUNT" -ge 3 ]; then
+            echo "SEVERITY=High" >> $GITHUB_ENV
+          elif [ "$FAIL_COUNT" -ge 1 ]; then
+            echo "SEVERITY=Medium" >> $GITHUB_ENV
+          else
+            echo "SEVERITY=None" >> $GITHUB_ENV
+
+      - name: Create Jira bug if tests failed
+        if: env.SEVERITY != 'None'
+        uses: atlassian/gajira-create@v3
+        with:
+          project: LEARN
+          issuetype: Bug
+          summary: "❌ React UI Test Failure | Severity: ${{ env.SEVERITY }}"
+          description: |
+            Frontend tests failed in the GitHub CI pipeline.
+
+            Severity: ${{ env.SEVERITY }}
+            Failed test details are available in the GitHub Actions logs.
+
+            🔗 [View CI Job](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+        env:
+          JIRA_BASE_URL: https://vedasamhithagopalam.atlassian.net
+          JIRA_USER_EMAIL: vedasamhitha1978@gmail.com
+          JIRA_API_TOKEN: ATATT3xFfGF06AL1T9KlJNId4j35LRFCTCCkTI3mewaVGEFCdgwNZCICAoFc4rREqBSfkaMOaM1YIZ8SG53Sq-ah0N58gdkHSp-XfdICzStseMIJi0NxbxEh09CiJVnrY4S_afsqyHMrSQ7myAvFBWCt-G4qau8wRvO7y3bnBZwz8lLHibRZ4cI=
