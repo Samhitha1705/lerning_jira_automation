@@ -50,7 +50,7 @@ jobs:
         if: env.SEVERITY != 'None'
         uses: atlassian/gajira-create@v3
         with:
-          project: Learninigjira
+          project: SCRUM
           issuetype: Bug
           summary: "❌ React UI Test Failure | Severity: ${{ env.SEVERITY }}"
           description: |
